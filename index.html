@@ -236,6 +236,7 @@
         <option value="" disabled selected>Select...</option>
         <option value="Aigis">Aigis</option>
         <option value="Junpei">Junpei</option>
+        <option value="Yukari">Yukari</option>
         <!-- Add other characters as needed -->
       </select>
     </div>
@@ -282,12 +283,16 @@
   </div>
   <div id="backgroundTextLine3">
     All artwork by <a href="https://x.com/Atlus_West" target="_blank">Atlus</a>.
+    <div id="backgroundTextLine4">
+  Latest Update: Added Yukari
+  </div>
   </div>
 
   <script>
 const characterTransforms = {
   Aigis: { scale: 1.034, top: "82%", left: "150%" },
-  Junpei: { scale: 1.178, top: "87%", left: "141%" }
+  Junpei: { scale: 1.178, top: "87%", left: "141%" },
+  Yukari: { scale: 1.05, top: "71%", left: "152%" }
 };
 
 function applyCharacterTransform(character) {
@@ -313,6 +318,10 @@ const characterAssets = {
   Junpei: {
     base1: { eyes: ["assets/junpei/eyes1.png","assets/junpei/eyes2.png"], mouth: ["assets/junpei/mouth1.png","assets/junpei/mouth2.png"] },
     base2: { eyes: ["assets/junpei/eyes3.png","assets/junpei/eyes4.png"], mouth: ["assets/junpei/mouth3.png","assets/junpei/mouth4.png"] }
+  },
+  Yukari: {
+    base1: { eyes: ["assets/yukari/eyes1.png","assets/yukari/eyes2.png"], mouth: ["assets/yukari/mouth1.png","assets/yukari/mouth2.png"] },
+    base2: { eyes: ["assets/yukari/eyes3.png","assets/yukari/eyes4.png"], mouth: ["assets/yukari/mouth3.png","assets/yukari/mouth4.png"] }
   }
 };
 

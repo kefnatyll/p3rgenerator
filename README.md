@@ -3,7 +3,9 @@ Inspired by [opennoise](https://x.com/opennoise)'s [Persona 5 & 4 Dialogue Gener
 
 Try it! [kefnatyll.github.io/p3rgenerator](https://kefnatyll.github.io/p3rgenerator/)
 
-This Dialogue Generator <ins>**contains some spoliers**</ins> so beware
+its kinda terrible but gets the job done
+
+This Dialogue Generator probably <ins>**contains some spoliers**</ins> so beware
 
 ____________________________________________________________________________
 <img alt="example" src="assets/example.png"> </img>
