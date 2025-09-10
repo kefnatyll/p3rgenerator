@@ -18,7 +18,8 @@
       justify-content: flex-start;
       align-items: flex-start;
       height: 100vh;
-      background: #0EB0F5;
+      background: url('./assets/p3underwater.png') no-repeat center center;
+      background-size: cover;
     }
 
     #characterContainer {
@@ -30,7 +31,7 @@
 
     #background {
       position: absolute;
-      top: 160%;
+      top: 156%;
       left: 215%;
       transform: translate(50%, 50%) scale(3.50);
       width: 100%;
@@ -149,8 +150,8 @@
     }
 
     #overlayName {
-      top: 349px;
-      left: 273%;
+      top: 340px;
+      left: 283%;
       width: 100%;
       text-align: left;
       font-size: 11.7px;
@@ -252,9 +253,9 @@
     <div id="overlayName"></div>
     <div id="overlayText"></div>
     <div id="character">
-      <img id="base" src="./assets/aigis/base1.png">
-      <img id="eyes" src="./assets/aigis/eyes1.png">
-      <img id="mouth" src="./assets/aigis/mouth1.png">
+      <img id="base" src="./assets/nothing/base1.png">
+      <img id="eyes" src="./assets/nothing/eyes1.png">
+      <img id="mouth" src="./assets/nothing/mouth1.png">
     </div>
 
     <div id="nameInputContainer">
@@ -264,7 +265,7 @@
   </div>
 
   <div id="backgroundText">
-    <a href="https://github.com/kefnatyll" target="_blank">Code</a> made by kefnatyl.
+    <a href="https://github.com/kefnatyll/p3rgenerator" target="_blank">Code</a> made by kefnatyl.
   </div>
   <div id="backgroundTextLine2">
     Inspired by <a href="http://www.p5generator.com/" target="_blank">p5generator.com</a>.
@@ -274,106 +275,198 @@
   </div>
 
   <script>
-    const characterTransforms = {
-      Aigis: { scale: 1.034, top: "82%", left: "150%" },
-      Junpei: { scale: 1.178, top: "87%", left: "141%" }
-    };
+const characterTransforms = {
+  Aigis: { scale: 1.034, top: "82%", left: "150%" },
+  Junpei: { scale: 1.178, top: "87%", left: "141%" }
+};
 
-    function applyCharacterTransform(character) {
-      const charDiv = document.getElementById("character");
-      if (characterTransforms[character]) {
-        const t = characterTransforms[character];
-        charDiv.style.transform = `scale(${t.scale})`;
-        charDiv.style.top = t.top;
-        charDiv.style.left = t.left;
-      } else {
-        charDiv.style.transform = "scale(0.988)";
-        charDiv.style.top = "57%";
-        charDiv.style.left = "180%";
+function applyCharacterTransform(character) {
+  const charDiv = document.getElementById("character");
+  if (characterTransforms[character]) {
+    const t = characterTransforms[character];
+    charDiv.style.transform = `scale(${t.scale})`;
+    charDiv.style.top = t.top;
+    charDiv.style.left = t.left;
+  } else {
+    charDiv.style.transform = "scale(0.988)";
+    charDiv.style.top = "57%";
+    charDiv.style.left = "180%";
+  }
+}
+
+// Update characterAssets to nest eyes/mouth options under each base
+const characterAssets = {
+  Aigis: {
+    base1: { eyes: ["assets/aigis/eyes1.png","assets/aigis/eyes2.png"], mouth: ["assets/aigis/mouth1.png","assets/aigis/mouth2.png"] },
+    base2: { eyes: ["assets/aigis/eyes1.png","assets/aigis/eyes2.png"], mouth: ["assets/aigis/mouth1.png","assets/aigis/mouth2.png"] }
+  },
+  Junpei: {
+    base1: { eyes: ["assets/junpei/eyes1.png","assets/junpei/eyes2.png"], mouth: ["assets/junpei/mouth1.png","assets/junpei/mouth2.png"] },
+    base2: { eyes: ["assets/junpei/eyes3.png","assets/junpei/eyes4.png"], mouth: ["assets/junpei/mouth3.png","assets/junpei/mouth4.png"] }
+  }
+};
+
+function setupOptions(containerId, targetId) {
+  const container = document.getElementById(containerId);
+  const imgs = container.querySelectorAll("img");
+  const target = document.getElementById(targetId);
+  imgs.forEach(img => {
+    img.addEventListener("click", () => {
+      target.src = img.src;
+      imgs.forEach(i => i.classList.remove("selected"));
+      img.classList.add("selected");
+      // If base is selected, update eyes and mouth options
+      if (targetId === "base") updateEyesMouth(img.dataset.base);
+    });
+  });
+  if (imgs.length) imgs[0].classList.add("selected");
+}
+
+function populateBaseOptions(character) {
+  const baseOptions = document.getElementById("baseOptions");
+  baseOptions.innerHTML = "";
+  if (!characterAssets[character]) return;
+
+  Object.keys(characterAssets[character]).forEach((base, i) => {
+    const img = document.createElement("img");
+    img.src = `assets/${character.toLowerCase()}/${base}.png`; // assume base image paths follow this naming
+    img.dataset.base = base;
+    if (i === 0) img.classList.add("selected");
+    baseOptions.appendChild(img);
+  });
+
+  setupOptions("baseOptions","base");
+  updateEyesMouth(Object.keys(characterAssets[character])[0]); // initialize eyes/mouth for first base
+}
+
+function updateEyesMouth(base) {
+  const character = characterDropdown.value;
+  const eyesOptions = document.getElementById("eyesOptions");
+  const mouthOptions = document.getElementById("mouthOptions");
+  eyesOptions.innerHTML = "";
+  mouthOptions.innerHTML = "";
+  
+  const eyes = characterAssets[character][base].eyes;
+  const mouth = characterAssets[character][base].mouth;
+
+  eyes.forEach((src, i) => {
+    const img = document.createElement("img");
+    img.src = src;
+    if (i === 0) img.classList.add("selected");
+    eyesOptions.appendChild(img);
+  });
+
+  mouth.forEach((src, i) => {
+    const img = document.createElement("img");
+    img.src = src;
+    if (i === 0) img.classList.add("selected");
+    mouthOptions.appendChild(img);
+  });
+
+  setupOptions("eyesOptions","eyes");
+  setupOptions("mouthOptions","mouth");
+
+  // set initial images
+  document.getElementById("eyes").src = eyes[0];
+  document.getElementById("mouth").src = mouth[0];
+}
+
+const characterDropdown = document.getElementById("characterDropdown");
+const optionsPanel = document.getElementById("optionsPanel");
+const overlayName = document.getElementById('overlayName');
+
+characterDropdown.addEventListener("change", function() {
+  const character = this.value;
+  if (character) {
+    optionsPanel.classList.add("active");
+    populateBaseOptions(character);
+    overlayName.textContent = character;
+    applyCharacterTransform(character);
+  }
+});
+
+const nameInput = document.getElementById('nameInput');
+const overlayText = document.getElementById('overlayText');
+nameInput.addEventListener('input', () => overlayText.textContent = nameInput.value);
+
+document.getElementById("downloadBtn").addEventListener("click", async () => {
+  const container = document.getElementById("characterContainer");
+  const bg = document.getElementById("background");
+  const character = document.getElementById("character");
+  const overlayName = document.getElementById("overlayName");
+  const overlayText = document.getElementById("overlayText");
+
+  // Wait for all images inside the container to decode (safe guard)
+  async function waitForImagesToDecode(parent) {
+    const imgs = Array.from(parent.querySelectorAll("img"));
+    await Promise.all(imgs.map(img => {
+      // If browser supports decode()
+      if (img.decode) {
+        return img.complete ? img.decode().catch(() => {}) : img.decode().catch(() => {});
       }
-    }
-
-    const characterAssets = {
-      Aigis: {
-        base: ["assets/aigis/base1.png","assets/aigis/base2.png"],
-        eyes: ["assets/aigis/eyes1.png","assets/aigis/eyes2.png"],
-        mouth: ["assets/aigis/mouth1.png","assets/aigis/mouth2.png"]
-      },
-      Junpei: {
-        base: ["assets/junpei/base1.png","assets/junpei/base2.png"],
-        eyes: ["assets/junpei/eyes1.png","assets/junpei/eyes2.png"],
-        mouth: ["assets/junpei/mouth1.png","assets/junpei/mouth2.png"]
-      }
-    };
-
-    function setupOptions(containerId, targetId) {
-      const container = document.getElementById(containerId);
-      const imgs = container.querySelectorAll("img");
-      const target = document.getElementById(targetId);
-      imgs.forEach(img => {
-        img.addEventListener("click", () => {
-          target.src = img.src;
-          imgs.forEach(i => i.classList.remove("selected"));
-          img.classList.add("selected");
-        });
+      // Fallback: resolve when load or error fires
+      return new Promise(resolve => {
+        if (img.complete) return resolve();
+        img.addEventListener("load", resolve);
+        img.addEventListener("error", resolve);
       });
-      if (imgs.length) imgs[0].classList.add("selected");
-    }
+    }));
+  }
 
-    function populateOptions(character) {
-      const baseOptions = document.getElementById("baseOptions");
-      const eyesOptions = document.getElementById("eyesOptions");
-      const mouthOptions = document.getElementById("mouthOptions");
-      baseOptions.innerHTML = "";
-      eyesOptions.innerHTML = "";
-      mouthOptions.innerHTML = "";
-      if (!characterAssets[character]) return;
+  try {
+    await waitForImagesToDecode(container);
 
-      ["base","eyes","mouth"].forEach(type => {
-        characterAssets[character][type].forEach((src, i) => {
-          const img = document.createElement("img");
-          img.src = src;
-          if (i === 0) img.classList.add("selected");
-          document.getElementById(type+"Options").appendChild(img);
-        });
-      });
+    // compute union bounding rect of the visible pieces we want to capture
+    const rects = [bg, character, overlayName, overlayText]
+      .filter(Boolean)
+      .map(el => el.getBoundingClientRect());
 
-      document.getElementById("base").src = characterAssets[character].base[0];
-      document.getElementById("eyes").src = characterAssets[character].eyes[0];
-      document.getElementById("mouth").src = characterAssets[character].mouth[0];
+    if (!rects.length) throw new Error("No elements found to capture.");
 
-      setupOptions("baseOptions","base");
-      setupOptions("eyesOptions","eyes");
-      setupOptions("mouthOptions","mouth");
-    }
+    const left = Math.min(...rects.map(r => r.left));
+    const top = Math.min(...rects.map(r => r.top));
+    const right = Math.max(...rects.map(r => r.right));
+    const bottom = Math.max(...rects.map(r => r.bottom));
+    const width = Math.max(1, right - left);
+    const height = Math.max(1, bottom - top);
 
-    const characterDropdown = document.getElementById("characterDropdown");
-    const optionsPanel = document.getElementById("optionsPanel");
-    const overlayName = document.getElementById('overlayName');
+    // scroll offsets (html2canvas expects document coordinates)
+    const x = left + window.scrollX;
+    const y = top + window.scrollY;
 
-    characterDropdown.addEventListener("change", function() {
-      const character = this.value;
-      if (character) {
-        optionsPanel.classList.add("active");
-        populateOptions(character);
-        overlayName.textContent = character;
-        applyCharacterTransform(character);
-      }
+    // Optional: temporarily hide UI so it doesn't accidentally overlap capture area
+    const leftPanel = document.querySelector('.leftPanel');
+    const leftPanelPrevVisibility = leftPanel ? leftPanel.style.visibility : null;
+    if (leftPanel) leftPanel.style.visibility = 'hidden';
+
+    // capture only the computed region of the page
+    const canvas = await html2canvas(document.body, {
+      x, y, width, height,
+      useCORS: true,          // try to use CORS for external images
+      allowTaint: false,      // don't allow tainted images (safer)
+      backgroundColor: null,  // keep transparency if desired; set to a color if you want a flat bg
+      scale: Math.min(window.devicePixelRatio || 1, 2) // control final resolution
     });
 
-    const nameInput = document.getElementById('nameInput');
-    const overlayText = document.getElementById('overlayText');
-    nameInput.addEventListener('input', () => overlayText.textContent = nameInput.value);
+    // restore UI visibility
+    if (leftPanel) leftPanel.style.visibility = leftPanelPrevVisibility || '';
 
-    // Download PNG
-    document.getElementById("downloadBtn").addEventListener("click", async () => {
-      const container = document.getElementById("characterContainer");
-      const canvas = await html2canvas(container, { useCORS: true, backgroundColor: null });
-      const link = document.createElement("a");
-      link.download = "character.png";
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-    });
+    // download the png
+    const link = document.createElement("a");
+    link.download = "character.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  } catch (err) {
+    console.error("Download capture failed:", err);
+    // Helpful diagnostics for the user
+    let message = "Could not create image. Try the suggestions below:\n\n";
+    message += "• Make sure your asset images are fully loaded (we wait for decode already).\n";
+    message += "• If images are local files (file://), run a local dev server and open the page via http(s) instead.\n";
+    message += "• If images come from another domain, enable CORS on the server and add crossorigin='anonymous' to <img> tags.\n";
+    message += "\nError: " + (err && err.message ? err.message : String(err));
+    alert(message);
+  }
+});
   </script>
 </body>
 </html>
