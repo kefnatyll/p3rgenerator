@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Character Creator</title>
+  <style>
+    
+    @font-face {
+      font-family: 'Skip Std B';
+      src: url('./fonts/FOT-Skip Std B.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    body { 
+      font-family: sans-serif; 
+      margin: 15px; 
+      display: flex; 
+      justify-content: flex-start; 
+      align-items: flex-start;
+      height: 100vh;
+      background: #0EB0F5;
+    }
+    #characterContainer { 
+      position: relative; 
+      width: 228px; 
+      height: 228px; 
+      flex-shrink: 0;
+    }
+    #background { 
+      position: absolute; 
+      top: 160%; 
+      left: 215%; 
+      transform: translate(50%, 50%) scale(3.50); 
+      width: 100%; 
+      z-index: 0; 
+    }
+    #character { 
+      position: absolute; 
+      top: 57%; 
+      left: 180%; 
+      width: 100%; 
+      z-index: 1; 
+      transform: scale(0.988); 
+      transform-origin: top left;
+      transition: transform 0.2s, top 0.2s, left 0.2s;
+    }
+    #character img { 
+      position: absolute; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+    }
+    .leftPanel {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-right: 30px; 
+      min-width: 167px; 
+    }
+    .characterDropdownContainer {
+      margin-bottom: 23px; 
+      width: 152px; 
+    }
+    .characterDropdownContainer label {
+      color: #fff;
+      font-weight: bold;
+      margin-bottom: 4.5px; 
+      display: block;
+    }
+    .characterDropdown {
+      width: 100%;
+      font-size: 12px; 
+      padding: 3.8px 6px; 
+      border-radius: 4.5px; 
+      border: 1px solid #aaa;
+      font-family: sans-serif;
+      margin-bottom: 7.6px; 
+    }
+    .optionsPanel {
+      display: none;
+      flex-direction: column;
+      width: 152px; 
+    }
+    .optionsPanel.active {
+      display: flex;
+    }
+    .optionsGroup {
+      margin-bottom: 13.7px; 
+    }
+    .optionsLabel {
+      color: #fff;
+      font-weight: bold;
+      margin-bottom: 4.5px; 
+      display: block;
+    }
+    .options {
+      display: flex;
+      flex-direction: row;
+      gap: 7.6px; 
+      margin: 0;
+    }
+    .options img { 
+      width: 68px; 
+      height: 68px; 
+      cursor: pointer; 
+      border: 2px solid transparent; 
+      border-radius: 6px; 
+      background: #fff;
+    }
+    .options img.selected { 
+      border-color: #007BFF; 
+    }
+    /* Text overlay styles */
+    #overlayText {
+      position: absolute;
+      top: 377px; 
+      left: 293%;
+      width: 100%;
+      text-align: left;
+      font-size: 16.7px; 
+      font-weight: bold;
+      font-stretch: ultra-expanded;
+      color: #fff;
+      pointer-events: none;
+      z-index: 2;
+      font-family: 'Skip Std B', sans-serif;
+      user-select: none;
+      padding-left: 7.6px;
+      transform: scaleY(1.1); /* 1.5 = 150% taller */
+      transform-origin: top;
+    }
+    #overlayName {
+      position: absolute;
+      top: 349px; 
+      left: 273%;
+      width: 100%;
+      text-align: left;
+      font-size: 11.7px; 
+      font-weight: bold;
+      color: #0CF0F4;
+      pointer-events: none;
+      z-index: 3;
+      font-family: 'Skip Std B', sans-serif;
+      user-select: none;
+      padding-left: 3.8px; 
+    }
+    #nameInputContainer {
+      top: 530px; 
+      left: 141%;
+      width: 350px;
+      position: absolute;
+      height: 80px; /* new height */
+    }
+    #nameInput {
+      width: 350px;
+      height: 60px;      /* taller input */
+      font-size: 18px;   /* optional, bigger text */
+      padding: 10px;     /* space inside the input */
+      box-sizing: border-box; /* ensures padding is included in height */
+      border-radius: 5px; /* optional, rounded corners */
+    }
+    #downloadBtn {
+      margin-top: 20px;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      background: #007BFF;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #downloadBtn:hover {
+      background: #0056b3;
+    }
+    #backgroundText {
+      position: absolute;
+      top: 500px; /* adjust based on your background placement */
+      left: 10px;
+      font-size: 16px;
+      color: #fff;
+      font-weight: bold;
+      z-index: 1; /* make sure it's above background but below character */
+      font-family: 'Skip Std B', sans-serif;
+}
+    #backgroundText a {
+      color: #fff; /* white text */
+      text-decoration: underline;
+      text-decoration-color: #030303; /* black underline */
+      text-decoration-thickness: 2px; /* underline thickness */
+      cursor: pointer;
+}
+    #backgroundTextLine2 {
+      position: absolute;
+      top: 522px; /* adjust based on your background placement */
+      left: 10px;
+      font-size: 12px;
+      color: #fff;
+      font-weight: bold;
+      z-index: 1; /* make sure it's above background but below character */
+      font-family: 'Skip Std B', sans-serif;
+
+}    #backgroundTextLine2 a {
+      color: #fff; /* white text */
+      text-decoration: underline;
+      text-decoration-color: #030303; /* black underline */
+      text-decoration-thickness: 2px; /* underline thickness */
+      cursor: pointer;
+}
+    #backgroundTextLine3 {
+      position: absolute;
+      top: 539px; /* adjust based on your background placement */
+      left: 10px;
+      font-size: 12px;
+      color: #fff;  
+      font-weight: bold;
+      z-index: 1; /* make sure it's above background but below character */
+      font-family: 'Skip Std B', sans-serif;
+
+}    #backgroundTextLine3 a {
+      color: #fff; /* white text */
+      text-decoration: underline;
+      text-decoration-color: #030303; /* black underline */
+      text-decoration-thickness: 2px; /* underline thickness */
+      cursor: pointer;
+}
+  </style>
+  <!-- html2canvas library -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+<body>
+  <div class="leftPanel">
+    <div class="characterDropdownContainer">
+      <label for="characterDropdown">Choose Character:</label>
+      <select id="characterDropdown" class="characterDropdown">
+        <option value="" disabled selected>Select...</option>
+        <option value="Yu">Yu</option>
+        <option value="Yukari">Yukari</option>
+        <option value="Junpei">Junpei</option>
+        <option value="Mitsuru">Mitsuru</option>
+        <option value="Akihiko">Akihiko</option>
+        <option value="Fuuka">Fuuka</option>
+        <option value="Aigis">Aigis</option>
+        <option value="Ken">Ken</option>
+        <option value="Koromaru">Koromaru</option>
+        <option value="Shinjiro">Shinjiro</option>
+        <option value="Elizabeth">Elizabeth</option>
+        <option value="Theodore">Theodore</option>
+        <option value="Marie">Marie</option>
+        <option value="Strega">Strega</option>
+        <option value="Ikutsuki">Ikutsuki</option>
+        <option value="Pharos">Pharos</option>
+        <option value="Ryoji">Ryoji</option>
+        <option value="Takaya">Takaya</option>
+        <option value="Jin">Jin</option>
+        <option value="Chidori">Chidori</option>
+      </select>
+    </div>
+    <div class="optionsPanel" id="optionsPanel">
+      <div class="optionsGroup">
+        <span class="optionsLabel">Choose Base</span>
+        <div class="options" id="baseOptions"></div>
+      </div>
+      <div class="optionsGroup">
+        <span class="optionsLabel">Choose Eyes</span>
+        <div class="options" id="eyesOptions"></div>
+      </div>
+      <div class="optionsGroup">
+        <span class="optionsLabel">Choose Mouth</span>
+        <div class="options" id="mouthOptions"></div>
+      </div>
+    </div>
+    <!-- Download button -->
+    <button id="downloadBtn">Download PNG</button>
+  </div>
+
+  <div id="characterContainer">
+    <img id="background" src="p3rui.png">
+    <div id="overlayName"></div>
+    <div id="overlayText"></div>
+    <div id="character">
+      <img id="base" src="base1.png">
+      <img id="eyes" src="eyes1.png">
+      <img id="mouth" src="mouth1.png">
+    </div>
+    <div id="nameInputContainer">
+      <label for="nameInput" style="color:#fff;font-weight:bold;">Dialogue:</label>
+      <input type="text" id="nameInput" maxlength="100" style="font-size: 80%; text-align: left;" placeholder="Your fate is in the cards...">
+    </div>
+  </div>
+
+<div id="backgroundText">
+  <a href="https://github.com/kefnatyll" target="_blank">Code</a> made by kefnatyl.
+</div>
+  <div id="backgroundTextLine2">
+    Inspired by <a href="http://www.p5generator.com/" target="_blank">p5generator.com</a>.
+  </div>
+    <div id="backgroundTextLine3">
+    All artwork by <a href="https://x.com/Atlus_West" target="_blank">Atlus</a>.
+  </div>
+
+  <script>
+    // Character-specific transform settings
+    const characterTransforms = {
+      Yu: { scale: 1.064, top: "55%", left: "170%" },
+      Yukari: { scale: 1.003, top: "58%", left: "182%" },
+      Junpei: { scale: 1.178, top: "87%", left: "141%" },
+      Mitsuru: { scale: 1.026, top: "56%", left: "178%" },
+      Akihiko: { scale: 0.988, top: "57%", left: "180%" },
+      Fuuka: { scale: 1.010, top: "58%", left: "181%" },
+      Aigis: { scale: 1.034, top: "82%", left: "150%" },
+      Ken: { scale: 0.95, top: "60%", left: "187%" },
+      Koromaru: { scale: 0.927, top: "62%", left: "190%" },
+      Shinjiro: { scale: 0.996, top: "57%", left: "180%" },
+      Elizabeth: { scale: 1.018, top: "56%", left: "178%" },
+      Theodore: { scale: 1.018, top: "56%", left: "178%" },
+      Marie: { scale: 1.003, top: "58%", left: "182%" },
+      Strega: { scale: 0.988, top: "57%", left: "180%" },
+      Ikutsuki: { scale: 0.988, top: "57%", left: "180%" },
+      Pharos: { scale: 0.982, top: "59%", left: "185%" },
+      Ryoji: { scale: 1.010, top: "58%", left: "181%" },
+      Takaya: { scale: 0.988, top: "57%", left: "180%" },
+      Jin: { scale: 0.988, top: "57%", left: "180%" },
+      Chidori: { scale: 1.003, top: "58%", left: "182%" }
+    };
+
+    function applyCharacterTransform(character) {
+      const charDiv = document.getElementById("character");
+      if (characterTransforms[character]) {
+        const t = characterTransforms[character];
+        charDiv.style.transform = `scale(${t.scale})`;
+        charDiv.style.top = t.top;
+        charDiv.style.left = t.left;
+      } else {
+        charDiv.style.transform = "scale(0.988)";
+        charDiv.style.top = "57%";
+        charDiv.style.left = "180%";
+      }
+    }
+
+    // Character assets (demo filenames)
+    const characterAssets = {
+      Yu: {
+        base: ["yu_base1.png", "yu_base2.png", "yu_base3.png"],
+        eyes: ["yu_eyes1.png", "yu_eyes2.png", "yu_eyes3.png"],
+        mouth: ["yu_mouth1.png", "yu_mouth2.png", "yu_mouth3.png"]
+      },
+      Yukari: {
+        base: ["yukari_base1.png", "yukari_base2.png", "yukari_base3.png"],
+        eyes: ["yukari_eyes1.png", "yukari_eyes2.png", "yukari_eyes3.png"],
+        mouth: ["yukari_mouth1.png", "yukari_mouth2.png", "yukari_mouth3.png"]
+      },
+      Junpei: {
+        base: ["junpei_base1.png", "junpei_base2.png", "junpei_base3.png"],
+        eyes: ["junpei_eyes1.png", "junpei_eyes2.png", "junpei_eyes3.png"],
+        mouth: ["junpei_mouth1.png", "junpei_mouth2.png", "junpei_mouth3.png"]
+      },
+      Mitsuru: {
+        base: ["mitsuru_base1.png", "mitsuru_base2.png", "mitsuru_base3.png"],
+        eyes: ["mitsuru_eyes1.png", "mitsuru_eyes2.png", "mitsuru_eyes3.png"],
+        mouth: ["mitsuru_mouth1.png", "mitsuru_mouth2.png", "mitsuru_mouth3.png"]
+      },
+      Akihiko: {
+        base: ["akihiko_base1.png", "akihiko_base2.png", "akihiko_base3.png"],
+        eyes: ["akihiko_eyes1.png", "akihiko_eyes2.png", "akihiko_eyes3.png"],
+        mouth: ["akihiko_mouth1.png", "akihiko_mouth2.png", "akihiko_mouth3.png"]
+      },
+      Fuuka: {
+        base: ["fuuka_base1.png", "fuuka_base2.png", "fuuka_base3.png"],
+        eyes: ["fuuka_eyes1.png", "fuuka_eyes2.png", "fuuka_eyes3.png"],
+        mouth: ["fuuka_mouth1.png", "fuuka_mouth2.png", "fuuka_mouth3.png"]
+      },
+      Aigis: {
+        base: ["aigis_base1.png", "aigis_base2.png", "aigis_base3.png"],
+        eyes: ["aigis_eyes1.png", "aigis_eyes2.png", "aigis_eyes3.png"],
+        mouth: ["aigis_mouth1.png", "aigis_mouth2.png", "aigis_mouth3.png"]
+      },
+      Ken: {
+        base: ["ken_base1.png", "ken_base2.png", "ken_base3.png"],
+        eyes: ["ken_eyes1.png", "ken_eyes2.png", "ken_eyes3.png"],
+        mouth: ["ken_mouth1.png", "ken_mouth2.png", "ken_mouth3.png"]
+      },
+      Koromaru: {
+        base: ["koromaru_base1.png", "koromaru_base2.png", "koromaru_base3.png"],
+        eyes: ["koromaru_eyes1.png", "koromaru_eyes2.png", "koromaru_eyes3.png"],
+        mouth: ["koromaru_mouth1.png", "koromaru_mouth2.png", "koromaru_mouth3.png"]
+      },
+      Shinjiro: {
+        base: ["shinjiro_base1.png", "shinjiro_base2.png", "shinjiro_base3.png"],
+        eyes: ["shinjiro_eyes1.png", "shinjiro_eyes2.png", "shinjiro_eyes3.png"],
+        mouth: ["shinjiro_mouth1.png", "shinjiro_mouth2.png", "shinjiro_mouth3.png"]
+      },
+      Elizabeth: {
+        base: ["elizabeth_base1.png", "elizabeth_base2.png", "elizabeth_base3.png"],
+        eyes: ["elizabeth_eyes1.png", "elizabeth_eyes2.png", "elizabeth_eyes3.png"],
+        mouth: ["elizabeth_mouth1.png", "elizabeth_mouth2.png", "elizabeth_mouth3.png"]
+      },
+      Theodore: {
+        base: ["theodore_base1.png", "theodore_base2.png", "theodore_base3.png"],
+        eyes: ["theodore_eyes1.png", "theodore_eyes2.png", "theodore_eyes3.png"],
+        mouth: ["theodore_mouth1.png", "theodore_mouth2.png", "theodore_mouth3.png"]
+      },
+      Marie: {
+        base: ["marie_base1.png", "marie_base2.png", "marie_base3.png"],
+        eyes: ["marie_eyes1.png", "marie_eyes2.png", "marie_eyes3.png"],
+        mouth: ["marie_mouth1.png", "marie_mouth2.png", "marie_mouth3.png"]
+      },
+      Strega: {
+        base: ["strega_base1.png", "strega_base2.png", "strega_base3.png"],
+        eyes: ["strega_eyes1.png", "strega_eyes2.png", "strega_eyes3.png"],
+        mouth: ["strega_mouth1.png", "strega_mouth2.png", "strega_mouth3.png"]
+      },
+      Ikutsuki: {
+        base: ["ikutsuki_base1.png", "ikutsuki_base2.png", "ikutsuki_base3.png"],
+        eyes: ["ikutsuki_eyes1.png", "ikutsuki_eyes2.png", "ikutsuki_eyes3.png"],
+        mouth: ["ikutsuki_mouth1.png", "ikutsuki_mouth2.png", "ikutsuki_mouth3.png"]
+      },
+      Pharos: {
+        base: ["pharos_base1.png", "pharos_base2.png", "pharos_base3.png"],
+        eyes: ["pharos_eyes1.png", "pharos_eyes2.png", "pharos_eyes3.png"],
+        mouth: ["pharos_mouth1.png", "pharos_mouth2.png", "pharos_mouth3.png"]
+      },
+      Ryoji: {
+        base: ["ryoji_base1.png", "ryoji_base2.png", "ryoji_base3.png"],
+        eyes: ["ryoji_eyes1.png", "ryoji_eyes2.png", "ryoji_eyes3.png"],
+        mouth: ["ryoji_mouth1.png", "ryoji_mouth2.png", "ryoji_mouth3.png"]
+      },
+      Takaya: {
+        base: ["takaya_base1.png", "takaya_base2.png", "takaya_base3.png"],
+        eyes: ["takaya_eyes1.png", "takaya_eyes2.png", "takaya_eyes3.png"],
+        mouth: ["takaya_mouth1.png", "takaya_mouth2.png", "takaya_mouth3.png"]
+      },
+      Jin: {
+        base: ["jin_base1.png", "jin_base2.png", "jin_base3.png"],
+        eyes: ["jin_eyes1.png", "jin_eyes2.png", "jin_eyes3.png"],
+        mouth: ["jin_mouth1.png", "jin_mouth2.png", "jin_mouth3.png"]
+      },
+      Chidori: {
+        base: ["chidori_base1.png", "chidori_base2.png", "chidori_base3.png"],
+        eyes: ["chidori_eyes1.png", "chidori_eyes2.png", "chidori_eyes3.png"],
+        mouth: ["chidori_mouth1.png", "chidori_mouth2.png", "chidori_mouth3.png"]
+      }
+    };
+
+    function setupOptions(containerId, targetId) {
+      const container = document.getElementById(containerId);
+      const imgs = container.querySelectorAll("img");
+      const target = document.getElementById(targetId);
+      imgs.forEach(img => {
+        img.addEventListener("click", () => {
+          target.src = img.src;
+          imgs.forEach(i => i.classList.remove("selected"));
+          img.classList.add("selected");
+        });
+      });
+      if (imgs.length) imgs[0].classList.add("selected");
+    }
+
+    function populateOptions(character) {
+      const baseOptions = document.getElementById("baseOptions");
+      const eyesOptions = document.getElementById("eyesOptions");
+      const mouthOptions = document.getElementById("mouthOptions");
+      baseOptions.innerHTML = "";
+      eyesOptions.innerHTML = "";
+      mouthOptions.innerHTML = "";
+      if (!characterAssets[character]) return;
+
+      characterAssets[character].base.forEach((src, i) => {
+        const img = document.createElement("img");
+        img.src = src;
+        img.dataset.type = "base";
+        if (i === 0) img.classList.add("selected");
+        baseOptions.appendChild(img);
+      });
+      characterAssets[character].eyes.forEach((src, i) => {
+        const img = document.createElement("img");
+        img.src = src;
+        img.dataset.type = "eyes";
+        if (i === 0) img.classList.add("selected");
+        eyesOptions.appendChild(img);
+      });
+      characterAssets[character].mouth.forEach((src, i) => {
+        const img = document.createElement("img");
+        img.src = src;
+        img.dataset.type = "mouth";
+        if (i === 0) img.classList.add("selected");
+        mouthOptions.appendChild(img);
+      });
+
+      document.getElementById("base").src = characterAssets[character].base[0];
+      document.getElementById("eyes").src = characterAssets[character].eyes[0];
+      document.getElementById("mouth").src = characterAssets[character].mouth[0];
+
+      setupOptions("baseOptions", "base");
+      setupOptions("eyesOptions", "eyes");
+      setupOptions("mouthOptions", "mouth");
+    }
+
+    const characterDropdown = document.getElementById("characterDropdown");
+    const optionsPanel = document.getElementById("optionsPanel");
+    const overlayName = document.getElementById('overlayName');
+
+    characterDropdown.addEventListener("change", function() {
+      const character = characterDropdown.value;
+      if (character) {
+        optionsPanel.classList.add("active");
+        populateOptions(character);
+        overlayName.textContent = character;
+        applyCharacterTransform(character);
+      } else {
+        optionsPanel.classList.remove("active");
+        overlayName.textContent = "";
+        applyCharacterTransform("");
+      }
+    });
+
+    const nameInput = document.getElementById('nameInput');
+    const overlayText = document.getElementById('overlayText');
+    nameInput.addEventListener('input', function() {
+      overlayText.textContent = nameInput.value;
+    });
+
+    if (characterDropdown.value) {
+      overlayName.textContent = characterDropdown.value;
+      optionsPanel.classList.add("active");
+      populateOptions(characterDropdown.value);
+      applyCharacterTransform(characterDropdown.value);
+    } else {
+      applyCharacterTransform("");
+    }
+
+    // Download PNG logic
+document.getElementById("downloadBtn").addEventListener("click", async () => {
+  const container = document.getElementById("characterContainer");
+  const bg = document.getElementById("background");
+  const character = document.getElementById("character");
+  const overlayName = document.getElementById("overlayName");
+  const overlayText = document.getElementById("overlayText");
+
+  // Wait for all images inside the container to decode (safe guard)
+  async function waitForImagesToDecode(parent) {
+    const imgs = Array.from(parent.querySelectorAll("img"));
+    await Promise.all(imgs.map(img => {
+      // If browser supports decode()
+      if (img.decode) {
+        return img.complete ? img.decode().catch(() => {}) : img.decode().catch(() => {});
+      }
+      // Fallback: resolve when load or error fires
+      return new Promise(resolve => {
+        if (img.complete) return resolve();
+        img.addEventListener("load", resolve);
+        img.addEventListener("error", resolve);
+      });
+    }));
+  }
+
+  try {
+    await waitForImagesToDecode(container);
+
+    // compute union bounding rect of the visible pieces we want to capture
+    const rects = [bg, character, overlayName, overlayText]
+      .filter(Boolean)
+      .map(el => el.getBoundingClientRect());
+
+    if (!rects.length) throw new Error("No elements found to capture.");
+
+    const left = Math.min(...rects.map(r => r.left));
+    const top = Math.min(...rects.map(r => r.top));
+    const right = Math.max(...rects.map(r => r.right));
+    const bottom = Math.max(...rects.map(r => r.bottom));
+    const width = Math.max(1, right - left);
+    const height = Math.max(1, bottom - top);
+
+    // scroll offsets (html2canvas expects document coordinates)
+    const x = left + window.scrollX;
+    const y = top + window.scrollY;
+
+    // Optional: temporarily hide UI so it doesn't accidentally overlap capture area
+    const leftPanel = document.querySelector('.leftPanel');
+    const leftPanelPrevVisibility = leftPanel ? leftPanel.style.visibility : null;
+    if (leftPanel) leftPanel.style.visibility = 'hidden';
+
+    // capture only the computed region of the page
+    const canvas = await html2canvas(document.body, {
+      x, y, width, height,
+      useCORS: true,          // try to use CORS for external images
+      allowTaint: false,      // don't allow tainted images (safer)
+      backgroundColor: null,  // keep transparency if desired; set to a color if you want a flat bg
+      scale: Math.min(window.devicePixelRatio || 1, 2) // control final resolution
+    });
+
+    // restore UI visibility
+    if (leftPanel) leftPanel.style.visibility = leftPanelPrevVisibility || '';
+
+    // download the png
+    const link = document.createElement("a");
+    link.download = "character.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  } catch (err) {
+    console.error("Download capture failed:", err);
+    // Helpful diagnostics for the user
+    let message = "Could not create image. Try the suggestions below:\n\n";
+    message += "• Make sure your asset images are fully loaded (we wait for decode already).\n";
+    message += "• If images are local files (file://), run a local dev server and open the page via http(s) instead.\n";
+    message += "• If images come from another domain, enable CORS on the server and add crossorigin='anonymous' to <img> tags.\n";
+    message += "\nError: " + (err && err.message ? err.message : String(err));
+    alert(message);
+  }
+});
+  </script>
+</body>
+</html>
