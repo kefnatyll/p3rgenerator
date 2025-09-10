@@ -21,6 +21,15 @@
       background: url('./assets/p3underwater.png') no-repeat center center;
       background-size: cover;
     }
+    #logo {
+      position: fixed;
+      top: 30px; /* distance from top */
+      left: 50%;
+      transform: translateX(-50%) scale(2);
+      z-index: 10; /* make sure it appears above everything else */
+      max-width: 200px; /* adjust as needed */
+      height: auto;
+    } 
 
     #characterContainer {
       position: relative;
@@ -219,6 +228,7 @@
 </head>
 
 <body>
+  <img id="logo" src="./assets/p3rlogo.png" alt="Logo">
   <div class="leftPanel">
     <div class="characterDropdownContainer">
       <label for="characterDropdown">Choose Character:</label>
